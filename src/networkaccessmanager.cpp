@@ -161,7 +161,6 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     if (m_urlHitLimit >= 0 && m_urlHitCount[qurl] > m_urlHitLimit) {
         reply->abort();
 		canceled = true;
-		//return reply;
     }
 
     QVariantList headers;

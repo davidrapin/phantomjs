@@ -343,10 +343,10 @@ QVariantMap WebPage::customHeaders() const
     return m_networkAccessManager->customHeaders();
 }
 
-void WebPage::setUrlHitLimit(QVariant &limit)
+void WebPage::setUrlHitLimit(const QVariant &limit)
 {
     if (limit.canConvert(QVariant::Int))
-        m_networkAccessManager->setUrlHitLimit(limit.convert(QVariant::Int));
+        m_networkAccessManager->setUrlHitLimit(limit.value());
 }
 
 QVariant WebPage::urlHitLimit() const

@@ -345,18 +345,13 @@ QVariantMap WebPage::customHeaders() const
 
 void WebPage::setUrlHitLimit(QVariant &limit)
 {
-    if (limit.canConvert(QVariant::Int)) {
+    if (limit.canConvert(QVariant::Int))
         m_networkAccessManager->setUrlHitLimit(limit.convert(QVariant::Int));
-        m_mainFrame->evaluateJavaScript("console.error('converting urlHitLimit to int OK');", QString());
-    } else {
-        m_mainFrame->evaluateJavaScript("console.error('error converting urlHitLimit to int');", QString());
-    }
 }
 
 QVariant WebPage::urlHitLimit() const
 {
-    QVariant limit = m_networkAccessManager->urlHitLimit();
-    return limit;
+    return QVariant(m_networkAccessManager->urlHitLimit());
 }
 
 void WebPage::resetUrlHitCount()

@@ -33,6 +33,7 @@
 
 #include <QAuthenticator>
 #include <QHash>
+#include <QMap>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QSet>
@@ -75,7 +76,7 @@ private:
     QNetworkDiskCache* m_networkDiskCache;
     QVariantMap m_customHeaders;
     int m_urlHitLimit;
-    QHash<QByteArray, int> m_urlHitCount;
+    QMap<QByteArray, int> m_urlHitCount;
 };
 
 #endif // NETWORKACCESSMANAGER_H

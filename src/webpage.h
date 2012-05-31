@@ -85,7 +85,7 @@ public:
     void setCustomHeaders(const QVariantMap &headers);
     QVariantMap customHeaders() const;
 
-    void setUrlHitLimit(QVariant &limit);
+    void setUrlHitLimit(const QVariant &limit);
     QVariant urlHitLimit() const;
     void resetUrlHitCount();
 

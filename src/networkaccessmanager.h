@@ -76,7 +76,7 @@ private:
     QNetworkDiskCache* m_networkDiskCache;
     QVariantMap m_customHeaders;
     int m_urlHitLimit;
-    QMap<QByteArray, int> m_urlHitCount;
+    QMap<QUrl, int> m_urlHitCount;
 };
 
 #endif // NETWORKACCESSMANAGER_H

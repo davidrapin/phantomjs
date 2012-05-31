@@ -71,6 +71,7 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent, const Config *config
     , m_ignoreSslErrors(config->ignoreSslErrors())
     , m_idCounter(0)
     , m_networkDiskCache(0)
+    , m_urlHitLimit(-1)
 {
     if (!config->cookiesFile().isEmpty()) {
         setCookieJar(new CookieJar(config->cookiesFile()));
@@ -108,6 +109,21 @@ QVariantMap NetworkAccessManager::customHeaders() const
     return m_customHeaders;
 }
 
+void NetworkAccessManager::setUrlHitLimit(const int limit)
+{
+    m_urlHitLimit = limit;
+}
+
+int NetworkAccessManager::urlHitLimit() const
+{
+    return m_urlHitLimit;
+}
+
+void NetworkAccessManager::resetUrlHitCount()
+{
+    m_urlHitCount.clear();
+}
+
 // protected:
 QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkRequest & request, QIODevice * outgoingData)
 {
@@ -138,6 +154,14 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
         reply->ignoreSslErrors();
     }
 
+    // cancel the request if it exeeds the hit limit for the target url
+    m_urlHitCount[url] = m_urlHitCount[url] + 1;
+	bool canceled = false;
+    if (m_urlHitLimit >= 0 && m_urlHitCount[url] > m_urlHitLimit) {
+        reply->abort();
+		//return reply;
+    }
+
     QVariantList headers;
     foreach (QByteArray headerName, req.rawHeaderList()) {
         QVariantMap header;
@@ -151,6 +175,7 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
 
     QVariantMap data;
     data["id"] = m_idCounter;
+    data["canceled"] = canceled;
     data["url"] = url.data();
     data["method"] = toString(op);
     data["headers"] = headers;
@@ -228,3 +253,4 @@ void NetworkAccessManager::provideAuthentication(QNetworkReply *reply, QAuthenti
     authenticator->setUser(m_userName);
     authenticator->setPassword(m_password);
 }
+

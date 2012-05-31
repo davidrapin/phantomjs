@@ -55,6 +55,7 @@ class WebPage: public REPLCompletable, public QWebFrame::PrintCallback
     Q_PROPERTY(QVariantMap clipRect READ clipRect WRITE setClipRect)
     Q_PROPERTY(QVariantMap scrollPosition READ scrollPosition WRITE setScrollPosition)
     Q_PROPERTY(QVariantMap customHeaders READ customHeaders WRITE setCustomHeaders)
+    Q_PROPERTY(QVariant urlHitLimit READ urlHitLimit WRITE setUrlHitLimit)
 
 public:
     WebPage(QObject *parent, const Config *config, const QUrl &baseUrl = QUrl());
@@ -83,6 +84,10 @@ public:
 
     void setCustomHeaders(const QVariantMap &headers);
     QVariantMap customHeaders() const;
+
+    void setUrlHitLimit(QVariant &limit);
+    QVariant urlHitLimit() const;
+    void resetUrlHitCount();
 
     void showInspector(const int remotePort = -1);
 

@@ -49,6 +49,9 @@ public:
     void setPassword(const QString &password);
     void setCustomHeaders(const QVariantMap &headers);
     QVariantMap customHeaders() const;
+    void setUrlHitLimit(const int limit);
+    int urlHitLimit() const;
+    void resetUrlHitCount();
 
 protected:
     bool m_ignoreSslErrors;
@@ -71,6 +74,8 @@ private:
     int m_idCounter;
     QNetworkDiskCache* m_networkDiskCache;
     QVariantMap m_customHeaders;
+    int m_urlHitLimit;
+    QHash<QByteArray, int> m_urlHitCount;
 };
 
 #endif // NETWORKACCESSMANAGER_H

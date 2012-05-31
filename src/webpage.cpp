@@ -343,6 +343,22 @@ QVariantMap WebPage::customHeaders() const
     return m_networkAccessManager->customHeaders();
 }
 
+void WebPage::setUrlHitLimit(QVariant &limit)
+{
+    if (limit.canConvert<int>())
+        m_networkAccessManager->setUrlHitLimit(limit.convert(QVariant::Int));
+}
+
+QVariant WebPage::urlHitLimit() const
+{
+    return QVariant(m_networkAccessManager->urlHitLimit());
+}
+
+void WebPage::resetUrlHitCount()
+{
+    m_networkAccessManager->resetUrlHitCount();
+}
+
 void WebPage::openUrl(const QString &address, const QVariant &op, const QVariantMap &settings)
 {
     QString operation;
@@ -731,6 +747,7 @@ void WebPage::initCompletions()
     addCompletion("libraryPath");
     addCompletion("settings");
     addCompletion("viewportSize");
+    addCompletion("urlHitLimit");
     // functions
     addCompletion("evaluate");
     addCompletion("includeJs");
@@ -740,6 +757,7 @@ void WebPage::initCompletions()
     addCompletion("render");
     addCompletion("sendEvent");
     addCompletion("uploadFile");
+    addCompletion("resetUrlHitCount");
     // callbacks
     addCompletion("onAlert");
     addCompletion("onConsoleMessage");

@@ -155,12 +155,14 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     }
 
     // cancel the request if it exeeds the hit limit for the target url
-	QUrl qurl = req.url();
+    QUrl qurl = req.url();
     m_urlHitCount[qurl] = m_urlHitCount[qurl] + 1;
-	bool canceled = false;
+    bool canceled = false;
     if (m_urlHitLimit >= 0 && m_urlHitCount[qurl] > m_urlHitLimit) {
         reply->abort();
-		canceled = true;
+        QTimer::singleShot(0, this, SIGNAL(readyRead()));
+        QTimer::singleShot(0, this, SIGNAL(finished()));
+        canceled = true;
     }
 
     QVariantList headers;

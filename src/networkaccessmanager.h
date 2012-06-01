@@ -34,6 +34,7 @@
 #include <QAuthenticator>
 #include <QHash>
 #include <QMap>
+#include <QTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QSet>

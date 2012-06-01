@@ -160,8 +160,8 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     bool canceled = false;
     if (m_urlHitLimit >= 0 && m_urlHitCount[qurl] > m_urlHitLimit) {
         reply->abort();
-        QTimer::singleShot(0, this, SIGNAL(readyRead()));
-        QTimer::singleShot(0, this, SIGNAL(finished()));
+        QTimer::singleShot(0, reply, SIGNAL(readyRead()));
+        QTimer::singleShot(0, reply, SIGNAL(finished()));
         canceled = true;
     }
 

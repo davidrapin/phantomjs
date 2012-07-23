@@ -40,6 +40,7 @@
 
 QTemporaryFile* Utils::m_tempHarness = 0;
 QTemporaryFile* Utils::m_tempWrapper = 0;
+bool Utils::printDebugMessages = false;
 
 // public:
 void Utils::showUsage()
@@ -53,10 +54,14 @@ void Utils::messageHandler(QtMsgType type, const char *msg)
 
     switch (type) {
     case QtDebugMsg:
-        fprintf(stdout, "%s [DEBUG] %s\n", qPrintable(now.toString(Qt::ISODate)), msg);
+        if (printDebugMessages) {
+            fprintf(stderr, "%s [DEBUG] %s\n", qPrintable(now.toString(Qt::ISODate)), msg);
+        }
         break;
     case QtWarningMsg:
-        fprintf(stderr, "%s [WARNING] %s\n", qPrintable(now.toString(Qt::ISODate)), msg);
+        if (printDebugMessages) {
+            fprintf(stderr, "%s [WARNING] %s\n", qPrintable(now.toString(Qt::ISODate)), msg);
+        }
         break;
     case QtCriticalMsg:
         fprintf(stderr, "%s [CRITICAL] %s\n", qPrintable(now.toString(Qt::ISODate)), msg);
@@ -69,6 +74,7 @@ void Utils::messageHandler(QtMsgType type, const char *msg)
 
 bool Utils::exceptionHandler(const char* dump_path, const char* minidump_id, void* context, bool succeeded)
 {
+    Q_UNUSED(context);
     fprintf(stderr, "PhantomJS has crashed. Please file a bug report at " \
                     "https://code.google.com/p/phantomjs/issues/entry and " \
                     "attach the crash dump file: %s/%s.dmp\n",

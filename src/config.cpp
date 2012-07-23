@@ -160,6 +160,14 @@ void Config::processArgs(const QStringList &args)
             setWebSecurityEnabled(false);
             continue;
         }
+        if (arg == "--debug=yes") {
+            setPrintDebugMessages(true);
+            continue;
+        }
+        if (arg == "--debug=no") {
+            setPrintDebugMessages(false);
+            continue;
+        }
         if (arg.startsWith("--")) {
             setUnknownOption(QString("Unknown option '%1'").arg(arg));
             return;
@@ -474,6 +482,26 @@ void Config::setWebSecurityEnabled(const bool value)
     m_webSecurityEnabled = value;
 }
 
+void Config::setJavascriptCanOpenWindows(const bool value)
+{
+    m_javascriptCanOpenWindows = value;
+}
+
+bool Config::javascriptCanOpenWindows() const
+{
+    return m_javascriptCanOpenWindows;
+}
+
+void Config::setJavascriptCanCloseWindows(const bool value)
+{
+    m_javascriptCanCloseWindows = value;
+}
+
+bool Config::javascriptCanCloseWindows() const
+{
+    return m_javascriptCanCloseWindows;
+}
+
 // private:
 void Config::resetToDefaults()
 {
@@ -500,7 +528,10 @@ void Config::resetToDefaults()
     m_remoteDebugPort = -1;
     m_remoteDebugAutorun = false;
     m_webSecurityEnabled = true;
+    m_javascriptCanOpenWindows = true;
+    m_javascriptCanCloseWindows = true;
     m_helpFlag = false;
+    m_printDebugMessages = false;
 }
 
 void Config::setProxyAuthPass(const QString &value)
@@ -531,4 +562,14 @@ bool Config::helpFlag() const
 void Config::setHelpFlag(const bool value)
 {
     m_helpFlag = value;
+}
+
+bool Config::printDebugMessages() const
+{
+    return m_printDebugMessages;
+}
+
+void Config::setPrintDebugMessages(const bool value)
+{
+    m_printDebugMessages = value;
 }

@@ -61,6 +61,8 @@
 #include "SecurityOrigin.h"
 #include "ViewportArguments.h"
 #include "WindowFeatures.h"
+#include "ScriptCallStack.h"
+#include "InspectorValues.h"
 
 #include "qgraphicswebview.h"
 #include "qwebframe_p.h"
@@ -295,17 +297,16 @@ void ChromeClientQt::setResizable(bool)
 }
 
 void ChromeClientQt::addMessageToConsole(MessageSource src, MessageType type, MessageLevel level, const String& message,
-                                         unsigned int lineNumber, const String& sourceID)
+                                         unsigned int lineNumber, const String& sourceID, PassRefPtr<ScriptCallStack> callStack)
 {
     QString x = message;
     QString y = sourceID;
 
-    // the MessageType value isn't useful - it will be LogMessageType for both errors
-    // and log messages.
-    if (level == ErrorMessageLevel) {
-      m_webPage->javaScriptError(x, lineNumber, y);
+    if (src == JSMessageSource && type == UncaughtExceptionMessageType && level == ErrorMessageLevel) {
+        QString stack = callStack->buildInspectorArray()->toJSONString();
+        m_webPage->javaScriptError(x, lineNumber, y, stack);
     } else {
-      m_webPage->javaScriptConsoleMessage(x, lineNumber, y);
+        m_webPage->javaScriptConsoleMessage(x, lineNumber, y);
     }
 }
 

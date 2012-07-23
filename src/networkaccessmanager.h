@@ -54,6 +54,8 @@ public:
     void setUrlHitLimit(const int limit);
     int urlHitLimit() const;
     void resetUrlHitCount();
+    void setCookies(const QVariantList &cookies);
+    QVariantList cookies() const;
 
 protected:
     bool m_ignoreSslErrors;
@@ -78,6 +80,7 @@ private:
     QVariantMap m_customHeaders;
     int m_urlHitLimit;
     QMap<QUrl, int> m_urlHitCount;
+    QVariantList m_cookies;
 };
 
 #endif // NETWORKACCESSMANAGER_H

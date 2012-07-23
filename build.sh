@@ -1,10 +1,16 @@
 #!/bin/bash
 
+set -e
+
 QT_CFG=''
 
 COMPILE_JOBS=1
+MAKEFLAGS_JOBS=''
 
-MAKEFLAGS_JOBS=$(echo $MAKEFLAGS | egrep -o '\-j[0-9]+' | egrep -o '[0-9]+')
+if [[ "$MAKEFLAGS" != "" ]]; then
+  MAKEFLAGS_JOBS=$(echo $MAKEFLAGS | egrep -o '\-j[0-9]+' | egrep -o '[0-9]+')
+fi
+
 if [[ "$MAKEFLAGS_JOBS" != "" ]]; then
   # user defined number of jobs in MAKEFLAGS, re-use that number
   COMPILE_JOBS=$MAKEFLAGS_JOBS
@@ -23,12 +29,15 @@ else
    fi
 fi
 
-
 until [ -z "$1" ]; do
     case $1 in
         "--qt-config")
             shift
             QT_CFG=" $1"
+            shift;;
+        "--qmake-args")
+            shift
+            QMAKE_ARGS=$1
             shift;;
         "--jobs")
             shift
@@ -49,5 +58,5 @@ until [ -z "$1" ]; do
 done
 
 cd src/qt && ./preconfig.sh --jobs $COMPILE_JOBS --qt-config "$QT_CFG" && cd ../..
-src/qt/bin/qmake
+src/qt/bin/qmake $QMAKE_ARGS
 make -j$COMPILE_JOBS

@@ -410,7 +410,6 @@ bool WebPage::navigationLocked()
     return m_navigationLocked;
 }
 
-
 void WebPage::setViewportSize(const QVariantMap &size)
 {
     int w = size.value("width").toInt();

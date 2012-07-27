@@ -72,6 +72,7 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent, const Config *config
     , m_idCounter(0)
     , m_networkDiskCache(0)
     , m_urlHitLimit(-1)
+    , m_urlHitRegexp(QRegExp())
 {
     if (!config->cookiesFile().isEmpty()) {
         setCookieJar(new CookieJar(config->cookiesFile()));
@@ -109,9 +110,21 @@ QVariantMap NetworkAccessManager::customHeaders() const
     return m_customHeaders;
 }
 
-void NetworkAccessManager::setUrlHitLimit(const int limit)
+void NetworkAccessManager::setUrlHitLimit(const int limit, const QString &pattern, const QString &replace)
 {
     m_urlHitLimit = limit;
+    m_urlHitRegexp = QRegExp(pattern, Qt::CaseInsensitive);
+    m_urlHitReplace = replace;
+}
+
+QRegExp NetworkAccessManager::urlHitRegexp() const
+{
+    return m_urlHitRegexp;
+}
+
+QString NetworkAccessManager::urlHitReplace() const
+{
+    return m_urlHitReplace;
 }
 
 int NetworkAccessManager::urlHitLimit() const
@@ -177,21 +190,26 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
         cookiejar->setCookiesFromUrl(cookieList, req.url());
     }
 
-    // Pass duty to the superclass - Nothing special to do here (yet?)
-    QNetworkReply *reply = QNetworkAccessManager::createRequest(op, req, outgoingData);
-    if(m_ignoreSslErrors) {
-        reply->ignoreSslErrors();
+    // update the hitCount for the (normalized) url
+    QString normalizedUrl = QString(url);
+    if (!m_urlHitRegexp.pattern().isEmpty() && m_urlHitRegexp.isValid()) {
+        normalizedUrl.replace(m_urlHitRegexp, m_urlHitReplace);
+    }
+    int hits = (m_urlHitCount[normalizedUrl] = m_urlHitCount[normalizedUrl] + 1);
+
+    QNetworkReply *reply;
+    bool canceled = false;
+    if (m_urlHitLimit > 0 && hits > m_urlHitLimit) {
+        // we reached the hit limit: create a mock request object
+        reply = QNetworkAccessManager::createRequest(QNetworkAccessManager::GetOperation, QNetworkRequest(QUrl()));
+        canceled = true;
+    } else {
+        // everything normal: create the request object
+        reply = QNetworkAccessManager::createRequest(op, req, outgoingData);
     }
 
-    // cancel the request if it exeeds the hit limit for the target url
-    QUrl qurl = req.url();
-    m_urlHitCount[qurl] = m_urlHitCount[qurl] + 1;
-    bool canceled = false;
-    if (m_urlHitLimit >= 0 && m_urlHitCount[qurl] > m_urlHitLimit) {
-        reply->abort();
-        QTimer::singleShot(0, reply, SIGNAL(readyRead()));
-        QTimer::singleShot(0, reply, SIGNAL(finished()));
-        canceled = true;
+    if(m_ignoreSslErrors) {
+        reply->ignoreSslErrors();
     }
 
     QVariantList headers;
@@ -208,7 +226,8 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     QVariantMap data;
     data["id"] = m_idCounter;
     data["canceled"] = canceled;
-    data["hitCount"] = m_urlHitCount[qurl];
+    data["hits"] = hits;
+    data["normalizedUrl"] = normalizedUrl;
     data["url"] = url.data();
     data["method"] = toString(op);
     data["headers"] = headers;

@@ -522,15 +522,22 @@ QVariantMap WebPage::customHeaders() const
     return m_networkAccessManager->customHeaders();
 }
 
-void WebPage::setUrlHitLimit(const QVariant &limit)
+void WebPage::setUrlHitLimit(const QVariantMap &urlHit)
 {
-    if (limit.canConvert(QVariant::Int))
-        m_networkAccessManager->setUrlHitLimit(limit.toInt(0));
+    m_networkAccessManager->setUrlHitLimit(
+        urlHit.value("limit").toInt(),
+        urlHit.value("pattern").isNull() ? QString() : urlHit.value("pattern").toString(),
+        urlHit.value("replace").isNull() ? QString() : urlHit.value("replace").toString()
+    );
 }
 
-QVariant WebPage::urlHitLimit() const
+QVariantMap WebPage::urlHitLimit() const
 {
-    return QVariant(m_networkAccessManager->urlHitLimit());
+    QVariantMap result;
+    result["limit"] = QVariant(m_networkAccessManager->urlHitLimit());
+    result["pattern"] = QVariant(m_networkAccessManager->urlHitRegexp().pattern());
+    result["replace"] = QVariant(m_networkAccessManager->urlHitReplace());
+    return result;
 }
 
 void WebPage::resetUrlHitCount()

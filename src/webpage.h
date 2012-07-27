@@ -59,7 +59,7 @@ class WebPage: public REPLCompletable, public QWebFrame::PrintCallback
     Q_PROPERTY(QVariantMap scrollPosition READ scrollPosition WRITE setScrollPosition)
     Q_PROPERTY(bool navigationLocked READ navigationLocked WRITE setNavigationLocked)
     Q_PROPERTY(QVariantMap customHeaders READ customHeaders WRITE setCustomHeaders)
-    Q_PROPERTY(QVariant urlHitLimit READ urlHitLimit WRITE setUrlHitLimit)
+    Q_PROPERTY(QVariantMap urlHitLimit READ urlHitLimit WRITE setUrlHitLimit)
     Q_PROPERTY(qreal zoomFactor READ zoomFactor WRITE setZoomFactor)
     Q_PROPERTY(QVariantList cookies READ cookies WRITE setCookies)
     Q_PROPERTY(QString windowName READ windowName)
@@ -104,8 +104,8 @@ public:
     void setCustomHeaders(const QVariantMap &headers);
     QVariantMap customHeaders() const;
 
-    void setUrlHitLimit(const QVariant &limit);
-    QVariant urlHitLimit() const;
+    void setUrlHitLimit(const QVariantMap &urlHit);
+    QVariantMap urlHitLimit() const;
     void resetUrlHitCount();
 
     void showInspector(const int remotePort = -1);

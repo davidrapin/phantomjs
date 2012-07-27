@@ -38,6 +38,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QSet>
+#include <QRegExp>
 
 class Config;
 class QNetworkDiskCache;
@@ -51,7 +52,9 @@ public:
     void setPassword(const QString &password);
     void setCustomHeaders(const QVariantMap &headers);
     QVariantMap customHeaders() const;
-    void setUrlHitLimit(const int limit);
+    void setUrlHitLimit(const int limit, const QString &pattern, const QString &replace);
+    QRegExp urlHitRegexp() const;
+    QString urlHitReplace() const;
     int urlHitLimit() const;
     void resetUrlHitCount();
     void setCookies(const QVariantList &cookies);
@@ -79,7 +82,9 @@ private:
     QNetworkDiskCache* m_networkDiskCache;
     QVariantMap m_customHeaders;
     int m_urlHitLimit;
-    QMap<QUrl, int> m_urlHitCount;
+    QMap<QString, int> m_urlHitCount;
+    QRegExp m_urlHitRegexp;
+    QString m_urlHitReplace;
     QVariantList m_cookies;
 };
 
